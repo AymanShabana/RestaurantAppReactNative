@@ -54,6 +54,9 @@ export const fetchDishes= () => (dispatch) => {
     .then(dishes => dispatch(addDishes(dishes)))
     .catch(error => dispatch(dishesFailed(error.message)))
 }
+export const dishesLoading = () => ({
+    type: ActionTypes.DISHES_LOADING
+});
 
 export const dishesFailed = (errmess) => ({
     type: ActionTypes.DISHES_FAILED,
@@ -86,6 +89,9 @@ export const fetchPromos= () => (dispatch) => {
     .then(promos => dispatch(addPromos(promos)))
     .catch(error => dispatch(promosFailed(error.message)))
 }
+export const promosLoading = () => ({
+    type: ActionTypes.DISHES_LOADING
+});
 
 export const promosFailed = (errmess) => ({
     type: ActionTypes.PROMOS_FAILED,
@@ -118,13 +124,15 @@ export const fetchLeaders= () => (dispatch) => {
     .then(leaders => dispatch(addLeaders(leaders)))
     .catch(error => dispatch(leadersFailed(error.message)))
 }
-
+export const leadersLoading = () => ({
+    type: ActionTypes.DISHES_LOADING
+});
 export const leadersFailed = (errmess) => ({
     type: ActionTypes.LEADERS_FAILED,
     payload: errmess
 });
 
 export const addLeaders = (leaders) => ({
-    type: ActionTypes.ADD_PROMOS,
+    type: ActionTypes.ADD_LEADERS,
     payload:leaders
 });
