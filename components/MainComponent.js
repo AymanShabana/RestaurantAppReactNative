@@ -11,6 +11,7 @@ import About from './AboutComponent';
 import {Icon} from 'react-native-elements';
 import {connect} from 'react-redux';
 import {fetchDishes ,fetchComments, fetchLeaders, fetchPromos} from '../redux/ActionCreators';
+import Reservation from './ReservationComponent'
 
 const mapStateToProps = state => {
     return {
@@ -82,7 +83,20 @@ const AboutNavigator =createStackNavigator({
 
     })
 }});
+const ReservationNavigator =createStackNavigator({
+    Reservation: {screen: Reservation,
+    navigationOptions:({navigation})=>({
+        headerStyle:{
+            backgroundColor: '#512DA8'
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle:{
+            color:'#fff'
+        },
+        headerLeft:() => <Icon name='menu' size={30} color='white' onPress={()=>navigation.toggleDrawer()} />
 
+    })
+}});
 const HomeNavigator =createStackNavigator({
     Home: {screen: Home,
     navigationOptions:({navigation})=>({
@@ -154,6 +168,17 @@ const MainNavigator = createDrawerNavigator({
             drawerLabel: 'Contact Us',
             drawerIcon: ({tintColor}) =>(
                 <Icon name='contacts' type='font-awsome' size={22} color={tintColor}/>
+            )
+        }
+
+    },
+    Reservation:{
+        screen: ReservationNavigator,
+        navigationOptions: {
+            title: 'Reserve Table',
+            drawerLabel: 'Reserve Table',
+            drawerIcon: ({tintColor}) =>(
+                <Icon name='local-dining' type='font-awsome' size={24} color={tintColor}/>
             )
         }
 
