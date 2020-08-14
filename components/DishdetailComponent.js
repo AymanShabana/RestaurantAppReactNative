@@ -20,59 +20,74 @@ const mapDispatchToProps = dispatch => ({
     postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment))
 })
 
-function RenderDish(props){
-    const dish = props.dish;
-
-    const recognizeDrag = ({moveX, moveY, dx, dy}) => {
-        if(dx < -200) //swipe left
-            return true;
-        else
-            return false;
-    };
-
-    const panResponder = PanResponder.create({
-        onStartShouldSetPanResponder: (e, gestureState) => {
-            return true;
-        },
-        onPanResponderEnd: (e, gestureState) =>{
-            if(recognizeDrag(gestureState))
-                Alert.alert(
-                    'Add to favorites?',
-                    'Are you sure you want to add '+ dish.name + ' to your favorites?',
-                    [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel pressed'),
-                            style: 'cancel'
-                        },
-                        {
-                            text: 'Yes',
-                            onPress: ()=> props.favorite?console.log('Already fav'):props.onPress(),
-                        }
-                    ],
-                    {cancelable: false}
-                )
-            return true;
-        }
-
-    });
-
-    if(dish!=null){
-        return(
-            <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
-            {...panResponder.panHandlers}>
-                <Card featuredTitle={dish.name} image={{uri: baseUrl+dish.image}}>
-                    <Text style={{margin:10}}>{dish.description}</Text>
-                    <View style={{flex:1, alignItems: 'center', justifyContent: 'center',flexDirection: 'row'}}>
-                        <Icon raised reverse name={props.favorite? 'heart':'heart-o'} type='font-awesome' color='#f50' onPress={()=> props.favorite?console.log('Already fav'):props.onPress()}/>
-                        <Icon raised reverse name={'pencil'} type='font-awesome' color='#512da8' onPress={()=> props.onCommentPress()}/>
-                    </View>
-                </Card>
-            </Animatable.View>
-        );
+class RenderDish extends Component{
+    constructor(props){
+        super(props);
     }
-    else{
-        return(<View></View>);
+    handleViewRef = (ref) => this.view = ref;
+    render(){
+
+        
+        const dish = this.props.dish;
+ 
+
+
+        const recognizeDrag = ({moveX, moveY, dx, dy}) => {
+            if(dx < -200) //swipe left
+                return true;
+            else
+                return false;
+        };
+
+        const panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: (e, gestureState) => {
+                return true;
+            },
+            onPanResponderGrant: () => {
+                this.view.rubberBand(1000)
+                .then(endState => console.log(endState.finished?'Finished':'Cancelled'));
+            },
+            onPanResponderEnd: (e, gestureState) =>{
+                if(recognizeDrag(gestureState))
+                    Alert.alert(
+                        'Add to favorites?',
+                        'Are you sure you want to add '+ dish.name + ' to your favorites?',
+                        [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel pressed'),
+                                style: 'cancel'
+                            },
+                            {
+                                text: 'Yes',
+                                onPress: ()=> this.props.favorite?console.log('Already fav'):this.props.onPress(),
+                            }
+                        ],
+                        {cancelable: false}
+                    )
+                return true;
+            }
+
+        });
+
+        if(dish!=null){
+            return(
+                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
+                ref={this.handleViewRef}
+                {...panResponder.panHandlers}>
+                    <Card featuredTitle={dish.name} image={{uri: baseUrl+dish.image}}>
+                        <Text style={{margin:10}}>{dish.description}</Text>
+                        <View style={{flex:1, alignItems: 'center', justifyContent: 'center',flexDirection: 'row'}}>
+                            <Icon raised reverse name={this.props.favorite? 'heart':'heart-o'} type='font-awesome' color='#f50' onPress={()=> this.props.favorite?console.log('Already fav'):props.onPress()}/>
+                            <Icon raised reverse name={'pencil'} type='font-awesome' color='#512da8' onPress={()=> this.props.onCommentPress()}/>
+                        </View>
+                    </Card>
+                </Animatable.View>
+            );
+        }
+        else{
+            return(<View></View>);
+        }
     }
 }
 
