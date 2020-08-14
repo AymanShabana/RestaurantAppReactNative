@@ -27,10 +27,7 @@ class RenderDish extends Component{
     handleViewRef = (ref) => this.view = ref;
     render(){
 
-        
         const dish = this.props.dish;
- 
-
 
         const recognizeDrag = ({moveX, moveY, dx, dy}) => {
             if(dx < -200) //swipe left
