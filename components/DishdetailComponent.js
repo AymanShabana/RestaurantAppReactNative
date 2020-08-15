@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, FlatList, StyleSheet, Modal, Button, Alert, PanResponder } from 'react-native';
+import { View, Text, ScrollView, FlatList, StyleSheet, Modal, Button, Alert, PanResponder, Share } from 'react-native';
 import { Card, Icon, Rating, Input, AirbnbRating } from 'react-native-elements';
 import {connect} from 'react-redux';
 import {baseUrl} from '../shared/baseUrl';
@@ -78,6 +78,16 @@ class RenderDish extends Component{
 
         });
 
+        const shareDish = (title, message, url) =>{
+            Share.share({
+                title: title,
+                message: title+": "+message+" "+url,
+                url: url
+            },{
+                dialogTitle: "Share "+title
+            });
+        }
+
         if(dish!=null){
             return(
                 <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
@@ -88,6 +98,7 @@ class RenderDish extends Component{
                         <View style={{flex:1, alignItems: 'center', justifyContent: 'center',flexDirection: 'row'}}>
                             <Icon raised reverse name={this.props.favorite? 'heart':'heart-o'} type='font-awesome' color='#f50' onPress={()=> this.props.favorite?console.log('Already fav'):props.onPress()}/>
                             <Icon raised reverse name={'pencil'} type='font-awesome' color='#512da8' onPress={()=> this.props.onCommentPress()}/>
+                            <Icon raised reverse name={'share'} type='font-awesome' color='#51d2a8' onPress={()=> shareDish(dish.name, dish.description, baseUrl+dish.image)}/>
                         </View>
                     </Card>
                 </Animatable.View>
