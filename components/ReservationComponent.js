@@ -1,8 +1,11 @@
 import React, {Component,useState} from 'react';
-import {Text,View,ScrollView,StyleSheet,Picker,Switch,Button, Modal} from 'react-native';
+import {Text,View,ScrollView,StyleSheet,Picker,Switch,Button, Modal, Alert} from 'react-native';
 import {Card} from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import * as Animatable from 'react-native-animatable';
+import * as Permissions from 'expo-permissions';
+import * as Notifications from 'expo-notifications';
 
 export const DatePackage = (props) => {
     const [date, setDate] = useState(props.date);
@@ -76,15 +79,74 @@ class Reservation extends Component{
         });
 
     }
+    async obtainNotificationPermission(){
+        let permission = await Notifications.getPermissionsAsync();
+        if(permission.status !== 'granted'){
+            permission = await Notifications.requestPermissionsAsync({
+                ios: {
+                  allowAlert: true,
+                  allowBadge: true,
+                  allowSound: true,
+                  allowAnnouncements: true,
+                }
+              });
+            if(permission.status !== 'granted'){
+                Alert.alert('Permission not granted to show notifications');
+            }
+
+        }
+
+        return permission;
+    }
+
+    async presentLocalNotification(date){
+        await this.obtainNotificationPermission();
+        Notifications.presentNotificationAsync({
+            title:'Your Reservation',
+            body: 'Reservation for '+date+' requested.',
+            ios:{
+                sound:true
+            },
+            android:{
+                sound:true,
+                vibrate: true,
+                color: '#512da8'
+            }
+        });
+    }
+
     handleChange = event => {
         this.state.date = event;
     }
     handleReservation(){
         console.log(JSON.stringify(this.state));
-        this.toggleModal();
+        //this.toggleModal();
+        Alert.alert(
+            'Your Reservation OK?',
+            'Number of Guests: '+this.state.guests+'\nSmoking? : '+(this.state.smoking?'Yes':'No')+'\nDate and Time: '
+            +moment(this.state.date).format("dddd, MMM DD at HH:mm a"),
+            [
+                { 
+                    text: 'Cancel', 
+                    onPress: () => this.resetForm(),
+                    style: 'cancel'
+                },
+                { 
+                    text: 'Yes', 
+                    onPress: () => {
+                        this.presentLocalNotification(this.state.date);
+                        this.resetForm();
+                    }
+                }
+            ],
+            {
+                cancelable:false
+            }
+        );
     }
     render() {
         return(
+            <Animatable.View animation="zoomIn" duration={2000} delay={100}>
             <ScrollView>
                 <View style={styles.formRow}>
                     <Text style={styles.formLabel}>Number of Guests</Text>
@@ -133,6 +195,7 @@ class Reservation extends Component{
                     </View>
                 </Modal>
             </ScrollView>
+            </Animatable.View>
         )
     }
 }

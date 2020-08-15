@@ -36,6 +36,13 @@ class RenderDish extends Component{
                 return false;
         };
 
+        const recognizeComment = ({moveX, moveY, dx, dy}) => {
+            if(dx > 200)//swipe right
+                return true;
+            else
+                return false;
+        };
+
         const panResponder = PanResponder.create({
             onStartShouldSetPanResponder: (e, gestureState) => {
                 return true;
@@ -45,7 +52,7 @@ class RenderDish extends Component{
                 .then(endState => console.log(endState.finished?'Finished':'Cancelled'));
             },
             onPanResponderEnd: (e, gestureState) =>{
-                if(recognizeDrag(gestureState))
+                if(recognizeDrag(gestureState)){
                     Alert.alert(
                         'Add to favorites?',
                         'Are you sure you want to add '+ dish.name + ' to your favorites?',
@@ -61,7 +68,11 @@ class RenderDish extends Component{
                             }
                         ],
                         {cancelable: false}
-                    )
+                    );
+                }
+                if(recognizeComment(gestureState)){
+                    this.props.onCommentPress();
+                }
                 return true;
             }
 
