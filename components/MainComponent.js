@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Menu from './MenuComponent';
 import Dishdetail from './DishdetailComponent';
-import { View, Platform, Image, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, Platform, Image, StyleSheet, ScrollView, Text, ToastAndroid } from 'react-native';
 import { createStackNavigator} from 'react-navigation-stack';
 import { createDrawerNavigator, DrawerItems} from 'react-navigation-drawer';
 import { createAppContainer, SafeAreaView} from 'react-navigation';
@@ -14,6 +14,7 @@ import {fetchDishes ,fetchComments, fetchLeaders, fetchPromos} from '../redux/Ac
 import Reservation from './ReservationComponent';
 import Favorites from './FavoriteComponent';
 import Login from './LoginComponent';
+import NetInfo from "@react-native-community/netinfo";
 
 const mapStateToProps = state => {
     return {
@@ -245,11 +246,46 @@ const MainContainer = createAppContainer(MainNavigator);
 
 class Main extends Component {
 
+    constructor(props){
+        super(props);
+        this.unsubscribe = null;
+    }
+
     componentDidMount(){
         this.props.fetchDishes();
         this.props.fetchComments();
         this.props.fetchPromos();
         this.props.fetchLeaders();
+
+        NetInfo.fetch().then(state => {
+            ToastAndroid.show("Initial Network Connectivity Type: "+state.type+", isConnected: "+state.isConnected,
+            ToastAndroid.LONG);
+
+          });
+
+        this.unsubscribe = NetInfo.addEventListener(state => {
+            this.handleConnectivityChange(state);
+        });
+    }
+    componentWillUnmount(){
+        this.unsubscribe();
+    }
+    handleConnectivityChange = (connectionInfo) => {
+        switch(connectionInfo.type){
+            case 'none':
+                ToastAndroid.show("You are now offline!",ToastAndroid.LONG);
+                break;
+            case 'wifi':
+                ToastAndroid.show("You are now on WiFi!",ToastAndroid.LONG);
+                break;
+            case 'cellular':
+                ToastAndroid.show("You are now on Mobile Data!",ToastAndroid.LONG);
+                break;
+            case 'unknown':
+                ToastAndroid.show("You are now on an unknown connection!",ToastAndroid.LONG);
+                break;
+            default:
+        }
     }
     render() {
         return(
