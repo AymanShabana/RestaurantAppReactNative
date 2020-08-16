@@ -7,6 +7,9 @@ import * as ImagePicker from 'expo-image-picker';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {baseUrl} from '../shared/baseUrl';
+import { Asset } from 'expo-asset';
+import * as ImageManipulator from "expo-image-manipulator";
+
 
 class LoginTab extends Component{
     constructor(props){
@@ -29,6 +32,8 @@ class LoginTab extends Component{
             }
         })
     }
+
+
     static navigationOptions = {
         title: 'Login'
         
@@ -93,13 +98,24 @@ class RegisterTab extends Component{
                 aspect: [4,3]
             });
             if(!capturedImage.cancelled){
-                this.setState({imageUrl: capturedImage.uri})
+                this.processImage(capturedImage.uri);
             }
         }
     }
     static navigationOptions = {
         title: 'Register'
     };
+    processImage = async (imageUri) => {
+        let processedImage = await ImageManipulator.manipulateAsync(
+            imageUri,
+            [
+                { resize: {width:400 }}
+            ],
+            {format:'png'}
+        );
+        this.setState({ imageUrl: processedImage.uri})
+    }
+
     handleRegister(){
         console.log(JSON.stringify(this.state));
         if(this.state.remember)
