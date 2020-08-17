@@ -1,0 +1,16 @@
+{
+    "expo": {
+     "name": "Restaurant",
+     "icon": "./icon.png",
+     "version": "1.0.0",
+     "slug": "your-app-slug",
+     "ios": {
+       "bundleIdentifier": "com.shabana.restaurant",
+       "buildNumber": "1.0.0"
+     },
+     "android": {
+       "package": "com.shabana.restaurant",
+       "versionCode": 1
+     }
+    }
+  }

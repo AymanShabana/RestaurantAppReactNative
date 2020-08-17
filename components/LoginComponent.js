@@ -88,6 +88,24 @@ class RegisterTab extends Component{
 
         }
     }
+    getImageFromGallery = async () =>{
+        const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
+        const cameraRollPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+        if(cameraPermission.status === 'granted' && cameraRollPermission.status === 'granted'){
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+              });
+              if (!result.cancelled) {
+                this.processImage(result.uri);
+              }
+            
+        }
+
+    }
     getImageFromCamers = async () => {
         const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
         const cameraRollPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -129,6 +147,7 @@ class RegisterTab extends Component{
                     <View style={styles.imageContainer}>
                         <Image source={{uri:this.state.imageUrl}} loadingIndicatorSource={require('./images/logo.png')} style={styles.image} />
                         <Button title='Camera' onPress={this.getImageFromCamers}/>
+                        <Button title='Gallery' onPress={this.getImageFromGallery}/>
                     </View>
                     <Input placeholder="Username" leftIcon={{type: 'font-awesome', name:"user-o"}} onChangeText={(username) => this.setState({username})} 
                     value={this.state.username} style={styles.formInput} />
@@ -190,7 +209,8 @@ const styles = StyleSheet.create({
     imageContainer:{
         flex:1,
         flexDirection: 'row',
-        margin:20
+        margin:20,
+        justifyContent:'space-around'
     },
     image: {
         margin:10,
